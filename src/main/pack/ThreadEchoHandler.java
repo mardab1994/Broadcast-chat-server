@@ -10,12 +10,18 @@ import java.util.Vector;
 
 public class ThreadEchoHandler implements Runnable {
 
-	private static int counter = 0;	//client counter
+	// flags of cipher mode
+	private final int CIPHER_MODE_NONE 	= 0;
+	private final int CIPHER_MODE_XOR   = 1;
+	private final int CIPHER_MODE_CESAR = 2;
+	
+	private static int counter = 0;				//client counter
 	private static int actualCounter = counter; // actual client counter 
 	private int clientId = 0;					// client id
-	private static Vector<Socket> myClients;
-	private static Vector<Boolean>stateOfClients;
-	 
+	private static Vector<Socket> myClients;			// vector of clients
+	private static Vector<Boolean>stateOfClients;		// vector of state of clients (is he active or not)
+	private static Vector<Integer>clientsCipherModes;	// vector of clients cipher modes
+		 
 	public ThreadEchoHandler(Socket i) {
 		Socket incoming = i;
 		if(counter == 0) {
@@ -29,7 +35,6 @@ public class ThreadEchoHandler implements Runnable {
 		actualCounter = counter;
 		counter++;
 	}
-
 
 	@Override
 	public void run() {
