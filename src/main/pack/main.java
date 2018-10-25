@@ -19,8 +19,8 @@ public class main {
 				Socket incoming = s.accept();
 				Runnable r = new ThreadEchoHandler(incoming);			
 				Thread t = new Thread(r);						
-				t.start();
-				i++;
+				t.start(); 
+				i++;  
 			}
 		}catch(IOException e) {
 			e.printStackTrace();
