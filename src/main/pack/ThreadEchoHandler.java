@@ -17,19 +17,19 @@ public class ThreadEchoHandler implements Runnable {
 	private final int CIPHER_MODE_XOR   = 1;
 	private final int CIPHER_MODE_CESAR = 2;
 	
-	private static int counter = 0;				//client counter
-	private static int actualCounter = counter; // actual client counter 
-	private int clientId = 0;					// client id
+	private static int counter = 0;						// client counter
+	private static int actualCounter = counter; 		// actual client counter 
+	private int clientId = 0;							// client id
 	private static Vector<Socket> myClients;			// vector of clients
 	private static Vector<Boolean>stateOfClients;		// vector of state of clients (is he active or not)
 	private static Vector<Integer>clientsCipherModes;	// vector of clients cipher modes
 	
-	private static Vector<Integer>vectorOf_P;					//vector of P numbers for every session
-	private static Vector<Integer>vectorOf_G;					//vector of G numbers for every session
-	private static Vector<Integer>vectorOfServerSecret_A;		//vector of secret a number for every session
-	private static Vector<Integer>vectorOf_A_2send2Client;		//vector of S numbers to send to clients
-	private static Vector<Integer>vectorOfSessionKeys;			//vector of session keys
-	private static Vector<Integer>vectorOf_B_fromClient;		//vector of B numbers from client
+	private static Vector<Integer>vectorOf_P;					// vector of P numbers for every session
+	private static Vector<Integer>vectorOf_G;					// vector of G numbers for every session
+	private static Vector<Integer>vectorOfServerSecret_A;		// vector of secret a number for every session
+	private static Vector<Integer>vectorOf_A_2send2Client;		// vector of S numbers to send to clients
+	private static Vector<Integer>vectorOfSessionKeys;			// vector of session keys
+	private static Vector<Integer>vectorOf_B_fromClient;		// vector of B numbers from client
 	
 	
 	public ThreadEchoHandler(Socket i) {
@@ -49,19 +49,19 @@ public class ThreadEchoHandler implements Runnable {
 		myClients.add(incoming);
 		stateOfClients.add(true);
 		
-		int randomNumber = generator.nextInt(24) + 3;	//random P number
+		int randomNumber = generator.nextInt(24) + 3;	// random P number
 		vectorOf_P.add(randomNumber);
 		
-		randomNumber = generator.nextInt(20) + 3;		//random G number
+		randomNumber = generator.nextInt(20) + 3;		// random G number
 		vectorOf_G.add(randomNumber);
 	
 		this.clientId = counter;
 		
-		randomNumber = generator.nextInt(10) + 3;		//random secret A number
+		randomNumber = generator.nextInt(10) + 3;		// random secret A number
 		vectorOfServerSecret_A.add(randomNumber);
 		Long tmp = ((long) Math.pow(vectorOf_G.get(this.clientId), vectorOfServerSecret_A.get(this.clientId)));
 		
-		vectorOf_A_2send2Client.add((int)(tmp%vectorOf_P.get(this.clientId)));	//calculate A number to send to client
+		vectorOf_A_2send2Client.add((int)(tmp%vectorOf_P.get(this.clientId)));	// calculate A number to send to client
 		
 		actualCounter = counter;
 		counter++;
