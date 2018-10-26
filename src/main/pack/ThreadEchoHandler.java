@@ -9,6 +9,9 @@ import java.util.Random;
 import java.util.Scanner;
 import java.util.Vector;
 
+import cipher.pack.Cesar;
+import cipher.pack.XOR;
+
 public class ThreadEchoHandler implements Runnable {
 	Random generator = new Random(); 
 	
@@ -31,6 +34,8 @@ public class ThreadEchoHandler implements Runnable {
 	private static Vector<Integer>vectorOfSessionKeys;			// vector of session keys
 	private static Vector<Integer>vectorOf_B_fromClient;		// vector of B numbers from client
 	
+	private XOR xor = new XOR();
+	private Cesar cesar = new Cesar();
 	
 	public ThreadEchoHandler(Socket i) {
 		Socket incoming = i;
@@ -100,20 +105,38 @@ public class ThreadEchoHandler implements Runnable {
 					clientsCipherModes.add(Integer.parseInt(in.nextLine()));
 					System.out.println(this.clientId+" cipher mode = "+clientsCipherModes.get(this.clientId));
 				}
-				out.println("Hello you are Client numer "+(counter-1)+"\n\n");
+			
 				System.out.println("My client id = "+this.clientId);
 				boolean done = false;
 				
 				while(!done && in.hasNextLine()) {
 					String line = in.nextLine();
+					String plainMsg;
+										
+					if(clientsCipherModes.get(this.clientId) == CIPHER_MODE_CESAR) {
+						plainMsg = cesar.decrypt(line);
+					}else if(clientsCipherModes.get(this.clientId) == CIPHER_MODE_XOR) {
+						plainMsg = xor.encryptDecrypt(line);
+					}else {
+						plainMsg = line;
+					}
+						
 					//System.out.println("Counter ="+counter);
 					for(int i = 0; i < stateOfClients.size(); i++) {
 						if(stateOfClients.get(i)==true) {
 							//System.out.println("i = "+i);
 							if(i!=this.clientId) {
+								String cipherMsg;
+								if(clientsCipherModes.get(i)==CIPHER_MODE_CESAR) {
+									cipherMsg = cesar.encrypt(plainMsg);
+								}else if(clientsCipherModes.get(i)==CIPHER_MODE_XOR) {
+									cipherMsg = xor.encryptDecrypt(plainMsg);
+								}else {
+									cipherMsg = plainMsg;
+								}
 								OutputStream multiOutStream = myClients.get(i).getOutputStream();
 								PrintWriter multiOut = new PrintWriter(multiOutStream, true);
-								multiOut.println("Client "+this.clientId+" "+line);//client -> name/nick
+								multiOut.println(cipherMsg);
 							}
 						}
 					}
