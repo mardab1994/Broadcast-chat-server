@@ -20,23 +20,27 @@ public class ThreadEchoHandler implements Runnable {
 	private final int CIPHER_MODE_XOR   = 1;
 	private final int CIPHER_MODE_CESAR = 2;
 	
-	private static int counter = 0;						// client counter
-	private static int actualCounter = counter; 		// actual client counter 
-	private int clientId = 0;							// client id
-	private static Vector<Socket> myClients;			// vector of clients
-	private static Vector<Boolean>stateOfClients;		// vector of state of clients (is he active or not)
-	private static Vector<Integer>clientsCipherModes;	// vector of clients cipher modes
+	/**client counter*/ 		private static int counter = 0;						
+	/**actual client counter */ private static int actualCounter = counter; 		 
+	/**client id*/ 				private int clientId = 0;							 
+	/**vector of clients*/ 		private static Vector<Socket> myClients;			 
+	/**vector of state of clients (is he active or not)*/ 	private static Vector<Boolean>stateOfClients;		 
+	/**vector of clients cipher modes*/						 private static Vector<Integer>clientsCipherModes;	 
 	
-	private static Vector<Integer>vectorOf_P;					// vector of P numbers for every session
-	private static Vector<Integer>vectorOf_G;					// vector of G numbers for every session
-	private static Vector<Integer>vectorOfServerSecret_A;		// vector of secret a number for every session
-	private static Vector<Integer>vectorOf_A_2send2Client;		// vector of S numbers to send to clients
-	private static Vector<Integer>vectorOfSessionKeys;			// vector of session keys
-	private static Vector<Integer>vectorOf_B_fromClient;		// vector of B numbers from client
+	/**vector of P numbers for every session*/			private static Vector<Integer>vectorOf_P;					
+	/**vector of G numbers for every session*/			private static Vector<Integer>vectorOf_G;					 
+	/**vector of secret a number for every session*/	private static Vector<Integer>vectorOfServerSecret_A;		 
+	/**vector of S numbers to send to clients*/			private static Vector<Integer>vectorOf_A_2send2Client;		
+	/**vector of session keys*/							private static Vector<Integer>vectorOfSessionKeys;			
+	/** vector of B numbers from client*/				private static Vector<Integer>vectorOf_B_fromClient;		
 	
-	private XOR xor = new XOR();
-	private Cesar cesar = new Cesar();
+	/**XOR object for enrcytp/decypt*/	private XOR xor = new XOR();
+	/**Cesar object for encypt/decypt*/	private Cesar cesar = new Cesar();
 	
+	/**Contructor of class <code>ThreadHandler</code> Init all parameters for Diffie-hellman 
+	 * @param i numer of socket
+	 * 
+	 */
 	public ThreadEchoHandler(Socket i) {
 		Socket incoming = i;
 		if(counter == 0) {								// init all vectors
@@ -72,6 +76,17 @@ public class ThreadEchoHandler implements Runnable {
 		counter++;
 	}
 
+
+	/**Method <code>run</code> start running individual thread for every session. 
+	 * Init stream for read and write.
+	 * Send to client his Client ID and generated parameter fot Dieffie-hellman (P,G and secret A number).
+	 * Get from Client his B number and calculate session key and send to client. If client calculate key
+	 * and compare with key from server and if the are different the client break the connection.
+	 * 
+	 * If key are identical server takes from Client his cipher mode and start waiting for messages from Client.
+	 * After receive message, server encrypt message and sends them to other clients encrypted with their encryption algorithm  
+	 *  
+	 */
 	@Override
 	public void run() {
 		try {
